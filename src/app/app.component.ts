@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {CulturalService} from "./services/cultural.service";
 
 @Component({
   selector: 'app-root',
