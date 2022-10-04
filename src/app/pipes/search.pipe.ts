@@ -5,7 +5,7 @@ import {IResponse} from "../interfaces/response.interface";
   name: 'searchPipe'
 })
 export class SearchPipe implements PipeTransform{
-  transform(responses?: IResponse[] | null, str?: string): IResponse[] {
+  transform(responses?: IResponse[], str?: string): IResponse[] {
     if (!responses) {
       return <IResponse[]>[];
     }

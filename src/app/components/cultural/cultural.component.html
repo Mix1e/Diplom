@@ -5,16 +5,16 @@
   <div class="containerLists">
     <div class="mediaList">
       <app-item  *ngFor="let movieTheatre of movieTheatres | searchPipe:search" [item]="movieTheatre"></app-item>
-      <div *ngIf="loading; else canGetMore" class="loader justify-content-center"></div>
+      <div *ngIf="loadingM; else canGetMore" class="loader"></div>
       <ng-template #canGetMore>
-        <button (click)="loadNext()">Загрузить ещё</button>
+        <button (click)="loadMovieTheatres()">Загрузить ещё</button>
       </ng-template>
     </div>
     <div class="mediaList">
-      <app-item *ngFor="let theatre of (theatres$ | async) | searchPipe: search; trackBy: trackByFn" [item]="theatre"></app-item>
-      <div *ngIf="loading; else canGetMore" class="loader justify-content-center"></div>
+      <app-item *ngFor="let theatre of theatres | searchPipe: search; trackBy: trackByFn" [item]="theatre"></app-item>
+      <div *ngIf="loadingT; else canGetMore" class="loader"></div>
       <ng-template #canGetMore>
-        <button (click)="loadNext()">Загрузить ещё</button>
+        <button (click)="loadTheatres()">Загрузить ещё</button>
       </ng-template>
     </div>
   </div>

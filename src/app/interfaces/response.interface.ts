@@ -10,17 +10,22 @@ export interface ICell {
   ChiefPosition: string;
   ClarificationOfWorkingHours: string;
   CommonName: string;
-  Email: {
-    Email: string;
-  }[];
+  Email: IEmail[];
   FullName: string;
-  PublicPhone: {
-    PublicPhone: string;
-  }[];
+  PublicPhone: IPublicPhone[];
   ShortName: string;
   WebSite: string;
-  WorkingHours: {
-    DayWeek: string;
-    WorkHours: string;
-  }[];
+  WorkingHours: IWorkingHours[];
+}
+
+export interface IEmail {
+  Email: string;
+}
+export interface IPublicPhone {
+  PublicPhone: string;
+}
+
+export interface IWorkingHours {
+  DayWeek: string;
+  WorkHours: string;
 }

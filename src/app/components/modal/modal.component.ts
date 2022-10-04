@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {ICell} from "../../interfaces/response.interface";
 
 @Component({
   selector: 'app-modal',
@@ -7,6 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ModalComponent implements OnInit {
 
+  @Input() cell:ICell;
   constructor() { }
 
   ngOnInit(): void {
