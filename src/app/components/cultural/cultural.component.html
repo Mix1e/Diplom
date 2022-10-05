@@ -1,3 +1,7 @@
+<mat-toolbar *ngIf="errMes.length != 0" color="warn">
+  <span class="centered">{{errMes}}</span>
+</mat-toolbar>
+
 <mat-form-field class="centered search-input" appearance="fill">
   <mat-label>Поиск по сайту</mat-label>
   <input matInput type="text" [(ngModel)]="search">
@@ -31,7 +35,7 @@
         </div>
 
         <ng-template #canGetMoreT>
-          <button class="centered" (click)="loadTheatres()">Загрузить ещё</button>
+          <button mat-raised-button color="primary" class="centered" (click)="loadTheatres()">Загрузить ещё</button>
         </ng-template>
       </div>
     </div>

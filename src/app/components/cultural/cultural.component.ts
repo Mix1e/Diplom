@@ -31,6 +31,7 @@ export class CulturalComponent implements OnInit {
   loadingT = false;
   allMTLoaded = false;
   allTLoaded = false;
+  errMes = "";
 
   theatres: IResponse[] = [];
   movieTheatres: IResponse[] = [];
@@ -58,6 +59,9 @@ export class CulturalComponent implements OnInit {
         if (this.movieTheatres.length % ApiCulturalService.RESPONSE_COUNT != 0 || curCount == this.movieTheatres.length) {
           this.allMTLoaded = true;
         }
+      },
+      () => {
+        this.errMes = `Ошибка при загрузке списка кинотеатров`;
       })
   }
 
@@ -71,6 +75,9 @@ export class CulturalComponent implements OnInit {
         if (this.theatres.length % ApiCulturalService.RESPONSE_COUNT != 0 || curCount == this.theatres.length) {
           this.allTLoaded = true;
         }
+      },
+      () => {
+        this.errMes = `Ошибка при загрузке списка театров`;
       })
   }
 }
