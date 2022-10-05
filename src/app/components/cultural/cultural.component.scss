@@ -1,37 +1,36 @@
-.containerLists {
+.container-lists {
   display: flex;
-  column-gap: 30px;
+  column-gap: 50px;
 }
 
-.mediaList {
+.media-list {
   flex: 0 1 50%;
   display: flex;
   flex-direction: column;
-  row-gap: 8px;
+  row-gap: 20px;
+  margin-bottom: 10%;
 }
 
-.loader {
-  --b: 10px;  /* border thickness */
-  --n: 10;    /* number of dashes*/
-  --g: 10deg; /* gap between dashes*/
-  --c: #8c8989;   /* the color */
-  width: 50px; /* size */
-  aspect-ratio: 1;
-  border-radius: 50%;
-  padding: 1px;
-  background: conic-gradient(#0000,var(--c)) content-box;
-  -webkit-mask:
-    repeating-conic-gradient(#0000 0deg,
-      #000 1deg calc(360deg/var(--n) - var(--g) - 1deg),
-      #0000     calc(360deg/var(--n) - var(--g)) calc(360deg/var(--n))),
-    radial-gradient(farthest-side,#0000 calc(98% - var(--b)),#000 calc(100% - var(--b)));
-  mask:
-    repeating-conic-gradient(#0000 0deg,
-      #000 1deg calc(360deg/var(--n) - var(--g) - 1deg),
-      #0000     calc(360deg/var(--n) - var(--g)) calc(360deg/var(--n))),
-    radial-gradient(farthest-side,#0000 calc(98% - var(--b)),#000 calc(100% - var(--b)));
-  -webkit-mask-composite: destination-in;
-  mask-composite: intersect;
-  animation: load 1s infinite steps(var(--n));
+.centered {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
-@keyframes load {to{transform: rotate(1turn)}}
+
+.search-input {
+  width: 400px;
+  margin-top: 20px;
+}
+
+.viewport {
+  height: 800px;
+  width: 600px;
+  border: solid black;
+  scroll-behavior: smooth;
+}
+
+.loading {
+  margin:0 auto;
+
+}
+

@@ -9,11 +9,18 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule} from "@angular/forms";
 import {SearchPipe} from "./pipes/search.pipe";
 import { ModalComponent } from './components/modal/modal.component';
-import {WorkingHoursPipe} from "./pipes/working-hours.pipe";
 import {PhonePipe} from "./pipes/phone.pipe";
 import {EmailPipe} from "./pipes/email.pipe";
 import { HeaderComponent } from './components/header/header.component';
-import { FooterComponent } from './components/footer/footer.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MatButtonModule} from "@angular/material/button";
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatInputModule} from '@angular/material/input';
+import {MatIconModule} from "@angular/material/icon";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {MatCardModule} from "@angular/material/card";
+import {MatDialogModule} from "@angular/material/dialog";
+import {ScrollingModule} from "@angular/cdk/scrolling";
 
 @NgModule({
   declarations: [
@@ -22,17 +29,24 @@ import { FooterComponent } from './components/footer/footer.component';
     ItemComponent,
     SearchPipe,
     ModalComponent,
-    WorkingHoursPipe,
     PhonePipe,
     EmailPipe,
-    HeaderComponent,
-    FooterComponent
+    HeaderComponent
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     NgbModule,
     FormsModule,
+    BrowserAnimationsModule,
+    MatButtonModule,
+    MatToolbarModule,
+    MatInputModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatCardModule,
+    MatDialogModule,
+    ScrollingModule
   ],
   providers: [],
   bootstrap: [AppComponent]

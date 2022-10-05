@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from "@angular/core";
-import {IEmail} from "../interfaces/response.interface";
+import {IEmail} from "../interfaces/email.interface";
 
 @Pipe({
   name: 'email'

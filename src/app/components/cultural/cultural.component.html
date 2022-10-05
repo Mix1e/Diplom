@@ -1,23 +1,40 @@
-<div class="form-outline " >
-  <input class="input rounded-1 shadow-sm" placeholder="Поиск" [(ngModel)]="search">
-</div>
-<div class="container mt-4">
-  <div class="containerLists">
-    <div class="mediaList">
-      <app-item  *ngFor="let movieTheatre of movieTheatres | searchPipe:search" [item]="movieTheatre"></app-item>
-      <div *ngIf="loadingM; else canGetMore" class="loader"></div>
-      <ng-template #canGetMore>
-        <button (click)="loadMovieTheatres()">Загрузить ещё</button>
-      </ng-template>
-    </div>
-    <div class="mediaList">
-      <app-item *ngFor="let theatre of theatres | searchPipe: search; trackBy: trackByFn" [item]="theatre"></app-item>
-      <div *ngIf="loadingT; else canGetMore" class="loader"></div>
-      <ng-template #canGetMore>
-        <button (click)="loadTheatres()">Загрузить ещё</button>
-      </ng-template>
+<mat-form-field class="centered search-input" appearance="fill">
+  <mat-label>Поиск по сайту</mat-label>
+  <input matInput type="text" [(ngModel)]="search">
+  <button *ngIf="search" matSuffix mat-icon-button aria-label="Clear" (click)="search=''">
+    <mat-icon>close</mat-icon>
+  </button>
+</mat-form-field>
+
+<div class="container">
+  <div class="container-lists">
+    <div class="media-list">
+      <app-item [@instance] *ngFor="let movieTheatre of movieTheatres | searchPipe:search; trackBy: trackByFn" [item]="movieTheatre"></app-item>
+
+      <div *ngIf="!allMTLoaded">
+        <div *ngIf="loadingM; else canGetMore" class="centered">
+          <mat-spinner class="loading"></mat-spinner>
+        </div>
+
+        <ng-template #canGetMore>
+          <button class="centered" mat-raised-button color="primary" (click)="loadMovieTheatres()">Загрузить ещё</button>
+        </ng-template>
+      </div>
+  </div>
+
+    <div class="media-list">
+      <app-item [@instance] *ngFor="let theatre of theatres | searchPipe: search; trackBy: trackByFn" [item]="theatre"></app-item>
+
+      <div *ngIf="!allTLoaded">
+        <div *ngIf="loadingT; else canGetMoreT" class="centered">
+          <mat-spinner class="loading"></mat-spinner>
+        </div>
+
+        <ng-template #canGetMoreT>
+          <button class="centered" (click)="loadTheatres()">Загрузить ещё</button>
+        </ng-template>
+      </div>
     </div>
   </div>
 </div>
-
 

@@ -1,11 +1,7 @@
-<div class="card mb-4 rounded-3 shadow-sm p-3">
-  <p>{{item.Cells.ShortName}}</p>
-  <p>Веб сайт: {{item.Cells.WebSite}}</p>
-  <p>{{item.Cells.Email | email}}</p>
-  <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#moreInfo">
-    Подробнее
-  </button>
-</div>
-
-<app-modal [cell]="item.Cells"></app-modal>
-<ng-content></ng-content>
+<mat-card class="item-card" (click)="openModal()">
+  <mat-card-title class="card-title">{{item.Cells.CommonName}}</mat-card-title>
+  <mat-card-content>
+    <p>Веб сайт: {{item.Cells.WebSite}}</p>
+    <p>{{item.Cells.Email | email}}</p>
+  </mat-card-content>
+</mat-card>

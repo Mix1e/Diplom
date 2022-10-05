@@ -1,5 +1,7 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {ICell} from "../../interfaces/response.interface";
+import {Component, Inject, OnInit} from '@angular/core';
+import {ICell} from "../../interfaces/cell.interface";
+import {MAT_DIALOG_DATA} from "@angular/material/dialog";
+
 
 @Component({
   selector: 'app-modal',
@@ -8,10 +10,10 @@ import {ICell} from "../../interfaces/response.interface";
 })
 export class ModalComponent implements OnInit {
 
-  @Input() cell:ICell;
-  constructor() { }
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: ICell) {}
+
 
   ngOnInit(): void {
   }
-
 }

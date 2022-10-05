@@ -11,7 +11,7 @@ export class SearchPipe implements PipeTransform{
     }
     if (!str) return responses;
     return responses.filter(e => {
-      return e.Cells?.FullName?.toLowerCase().includes(str.toLowerCase())
+      return e.Cells.ShortName.toLowerCase().includes(str.toLowerCase())
     });
   }
 }

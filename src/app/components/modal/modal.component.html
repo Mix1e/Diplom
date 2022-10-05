@@ -1,20 +1,15 @@
-<div class="modal fade" id="moreInfo" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Подробная информация</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p>{{cell.FullName}}</p>
-        <p>{{cell.ChiefPosition}}: {{cell.ChiefName}}</p>
-        <p>Jhu{{cell.ChiefOrg}}</p>
-        <p>asa{{cell.CommonName}}</p>
-        <p>{{cell.Email | email}}</p>
-        <p>{{cell.PublicPhone | phoneNumber}}</p>
-        <p>Веб-сайт: {{cell.WebSite}}</p>
-        <p style="white-space: pre">{{cell.WorkingHours | workingHours}}</p>
-      </div>
+<div class="modal-container">
+  <h1 mat-dialog-title>{{data.FullName}}</h1>
+  <div mat-dialog-content>
+    <p class="info">Информация:</p>
+    <p>{{data.ChiefPosition}}: {{data.ChiefName}}</p>
+    <p>{{data.Email | email}}</p>
+    <p>{{data.PublicPhone | phoneNumber}}</p>
+    <div class="work-time">
+      <p>Веб-сайт: {{data.WebSite}}</p>
+      <p class="info">Время работы:</p>
+      <p *ngFor="let wh of data.WorkingHours">{{wh.DayWeek}}: {{wh.WorkHours}}</p>
     </div>
   </div>
 </div>
+

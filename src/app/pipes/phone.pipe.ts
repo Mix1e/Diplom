@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from "@angular/core";
-import {IPublicPhone} from "../interfaces/response.interface";
+import {IPublicPhone} from "../interfaces/public-phone";
 
 @Pipe({
   name: 'phoneNumber'
