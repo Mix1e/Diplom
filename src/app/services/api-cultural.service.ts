@@ -34,8 +34,7 @@ export class ApiCulturalService {
     params.append('api_key', environment.apiKey)
     return this.http.post<IResponse[]>(environment.apiTheatreUrl + `/${entity}` + "/rows" + `?${params}`, body, {
       headers: {
-        'Access-Control-Allow-Methods': 'POST',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization'}
+        'Access-Control-Allow-Headers': "Access-Control-Allow-Headers, Origin,Accept, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers"}
     })
   }
 
