@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Injectable, OnInit} from '@angular/core';
 import {ApiCulturalService} from "../../services/api-cultural.service";
 import {EntityId} from "../../enums/entity-id";
 import {IResponse} from "../../interfaces/response.interface";
@@ -25,6 +25,8 @@ import {animate, state, style, transition, trigger} from "@angular/animations";
     ])
   ]
 })
+
+@Injectable()
 export class CulturalComponent implements OnInit {
   search = "";
   loadingM = false;
@@ -36,7 +38,7 @@ export class CulturalComponent implements OnInit {
   theatres: IResponse[] = [];
   movieTheatres: IResponse[] = [];
 
-  constructor(private theatreService: ApiCulturalService,
+  constructor(private culturalService: ApiCulturalService,
   ) {
   }
 
@@ -51,7 +53,7 @@ export class CulturalComponent implements OnInit {
 
   loadMovieTheatres() {
     this.loadingM = true;
-    this.theatreService.getInfo(EntityId.MOVIE_THEATER, this.movieTheatres?.length).subscribe(
+    this.culturalService.getInfo(EntityId.MOVIE_THEATER, this.movieTheatres?.length).subscribe(
       response => {
         let curCount = this.movieTheatres.length;
         this.movieTheatres = this.movieTheatres.concat(response);
@@ -67,7 +69,7 @@ export class CulturalComponent implements OnInit {
 
   loadTheatres() {
     this.loadingT = true;
-    this.theatreService.getInfo(EntityId.THEATER, this.theatres?.length).subscribe(
+    this.culturalService.getInfo(EntityId.THEATER, this.theatres?.length).subscribe(
       response => {
         let curCount = this.theatres.length;
         this.theatres = this.theatres.concat(response);

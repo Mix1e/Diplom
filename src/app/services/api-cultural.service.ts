@@ -8,7 +8,6 @@ import {environment} from "../../environments/environment";
 const body = [
   "ChiefName",
   "ChiefPosition",
-  "ChiefOrg",
   "ClarificationOfWorkingHours",
   "CommonName",
   "Email",
@@ -33,6 +32,11 @@ export class ApiCulturalService {
     params.append("$top", ApiCulturalService.RESPONSE_COUNT.toString());
     params.append("$skip", skip.toString());
     params.append('api_key', environment.apiKey)
-    return this.http.post<IResponse[]>(environment.apiTheatreUrl + `/${entity}` + "/rows" + `?${params}`, body)
+    return this.http.post<IResponse[]>(environment.apiTheatreUrl + `/${entity}` + "/rows" + `?${params}`, body, {
+      headers: {
+        'Access-Control-Allow-Methods': 'POST',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'}
+    })
   }
+
 }

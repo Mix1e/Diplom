@@ -5,8 +5,8 @@
     <p>{{data.ChiefPosition}}: {{data.ChiefName}}</p>
     <p>{{data.Email | email}}</p>
     <p>{{data.PublicPhone | phoneNumber}}</p>
+    <p>Веб-сайт: {{data.WebSite}}</p>
     <div class="work-time">
-      <p>Веб-сайт: {{data.WebSite}}</p>
       <p class="info">Время работы:</p>
       <p *ngFor="let wh of data.WorkingHours">{{wh.DayWeek}}: {{wh.WorkHours}}</p>
     </div>
