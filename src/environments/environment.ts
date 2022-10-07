@@ -4,7 +4,6 @@
 
 export const environment = {
   production: false,
-  apiTheatreUrl: 'https://apidata.mos.ru/v1/datasets',
   apiKey: 'f04fab203b351ba109b333521131772a'
 };
 

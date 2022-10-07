@@ -4,7 +4,6 @@ import {IWorkingHours} from "./working-hours.interface";
 
 export interface ICell {
   ChiefName: string;
-  ChiefOrg?: string;
   ChiefPosition: string;
   ClarificationOfWorkingHours: string;
   CommonName: string;
