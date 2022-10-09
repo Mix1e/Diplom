@@ -1,7 +1,7 @@
 const HttpsProxyAgent = require('https-proxy-agent');
 
 const proxyConfig = [{
-  context: '/v1/*',
+  context: '/v1',
   target: 'https://apidata.mos.ru',
   secure: false,
   changeOrigin: true,
