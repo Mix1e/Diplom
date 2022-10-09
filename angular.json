@@ -76,7 +76,8 @@
               "browserTarget": "Cultural:build:production"
             },
             "development": {
-              "browserTarget": "Cultural:build:development"
+              "browserTarget": "Cultural:build:development",
+              "proxyConfig": "src/proxy.conf.js"
             }
           },
           "defaultConfiguration": "development"

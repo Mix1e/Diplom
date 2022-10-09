@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  apiKey: 'f04fab203b351ba109b333521131772a'
+  apiKey: 'f04fab203b351ba109b333521131772a',
+  workingUrl: `https://apidata.mos.ru`
 };
 
 /*

@@ -23,9 +23,9 @@ const body = [
 })
 export class ApiCulturalService {
   static RESPONSE_COUNT = 20;
-  private workingUrl = `https://apidata.mos.ru/v1/datasets`;
 
   constructor(private http: HttpClient) {
+
   }
 
   getInfo(entity: EntityId, skip: number): Observable<IResponse[]> {
@@ -33,7 +33,7 @@ export class ApiCulturalService {
     params.append("$top", ApiCulturalService.RESPONSE_COUNT.toString());
     params.append("$skip", skip.toString());
     params.append('api_key', environment.apiKey)
-    return this.http.post<IResponse[]>(`api/v1/datasets/${entity}/rows?${params}`, body, {
+    return this.http.post<IResponse[]>(`/v1/datasets/${entity}/rows?${params}`, body, {
       headers: {
         'Access-Control-Allow-Headers': "Access-Control-Allow-Headers, Origin,Accept, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers"}
     })
