@@ -25,7 +25,6 @@ export class ApiCulturalService {
   static RESPONSE_COUNT = 20;
 
   constructor(private http: HttpClient) {
-
   }
 
   getInfo(entity: EntityId, skip: number): Observable<IResponse[]> {
