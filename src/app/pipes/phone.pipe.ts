@@ -9,7 +9,7 @@ export class PhonePipe implements PipeTransform {
     if (!phones) {
       return "";
     }
-    let str:string = "Контактные номера: \n";
+    let str: string = "Контактные номера: \n";
     phones.forEach(x => {
       str += `${x.PublicPhone}, `;
     })

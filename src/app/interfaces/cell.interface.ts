@@ -9,7 +9,6 @@ export interface ICell {
   CommonName: string;
   Email: IEmail[];
   FullName: string;
-  // @ts-ignore
   PublicPhone: IPublicPhone[];
   ShortName: string;
   WebSite: string;

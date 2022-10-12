@@ -22,7 +22,7 @@ const body = [
   providedIn: 'root'
 })
 export class ApiCulturalService {
-  static RESPONSE_COUNT = 20;
+  static RESPONSE_COUNT: number = 20;
 
   constructor(private http: HttpClient) {
   }

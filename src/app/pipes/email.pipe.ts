@@ -9,7 +9,7 @@ export class EmailPipe implements PipeTransform {
     if (!emails) {
       return "";
     }
-    let str:string = "Email: \n";
+    let str: string = "Email: \n";
     emails.forEach(x => {
       str += `${x.Email}\n`;
     })

@@ -28,12 +28,12 @@ import {animate, state, style, transition, trigger} from "@angular/animations";
 
 @Injectable()
 export class CulturalComponent implements OnInit {
-  search = "";
-  loadingM = false;
-  loadingT = false;
-  allMTLoaded = false;
-  allTLoaded = false;
-  errMes = "";
+  search: string = "";
+  loadingM: boolean = false;
+  loadingT: boolean = false;
+  allMTLoaded: boolean = false;
+  allTLoaded: boolean = false;
+  errMes: string = "";
 
   theatres: IResponse[] = [];
   movieTheatres: IResponse[] = [];
