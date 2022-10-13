@@ -1,5 +1,5 @@
-<mat-toolbar *ngIf="errMes" color="warn">
-  <span class="centered">{{errMes}}</span>
+<mat-toolbar *ngIf="errorMessage as err" color="warn">
+  <span class="centered">{{err}}</span>
 </mat-toolbar>
 
 <mat-form-field class="centered search-input" appearance="fill">
@@ -10,35 +10,33 @@
   </button>
 </mat-form-field>
 
-<div class="container">
-  <div class="container-lists">
-    <div class="media-list">
-      <app-item [@instance] *ngFor="let movieTheatre of movieTheatres | searchPipe:search; trackBy: trackByFn" [item]="movieTheatre"></app-item>
+<div class="container-lists">
+  <div class="media-list">
+    <app-item *ngFor="let movieTheatre of (movieTheatres$ | async) | searchPipe: search; trackBy: trackByFn"
+              [item]="movieTheatre" [@instance]>
+    </app-item>
 
-      <div *ngIf="!allMTLoaded">
-        <div *ngIf="loadingM; else canGetMore" class="centered">
-          <mat-spinner class="loading"></mat-spinner>
-        </div>
+    <ng-container *ngIf="(loadingMT$ | async); else canGetMoreTemplate">
+      <mat-spinner class="loading"></mat-spinner>
+    </ng-container>
 
-        <ng-template #canGetMore>
-          <button class="centered" mat-raised-button color="primary" (click)="loadMovieTheatres()">Загрузить ещё</button>
-        </ng-template>
-      </div>
+    <ng-template #canGetMoreTemplate>
+      <button *ngIf="!allMTLoaded" class="centered" mat-raised-button color="primary" (click)="loadMovieTheatres()">Загрузить ещё</button>
+    </ng-template>
   </div>
 
-    <div class="media-list">
-      <app-item [@instance] *ngFor="let theatre of theatres | searchPipe: search; trackBy: trackByFn" [item]="theatre"></app-item>
+  <div class="media-list">
+    <app-item *ngFor="let theatre of (theatres$ | async) | searchPipe: search; trackBy: trackByFn"
+              [item]="theatre" [@instance]>
+    </app-item>
 
-      <div *ngIf="!allTLoaded">
-        <div *ngIf="loadingT; else canGetMoreT" class="centered">
-          <mat-spinner class="loading"></mat-spinner>
-        </div>
+    <ng-container *ngIf="(loadingT$ | async); else canGetMoreTemplate1">
+      <mat-spinner class="loading"></mat-spinner>
+    </ng-container>
 
-        <ng-template #canGetMoreT>
-          <button mat-raised-button color="primary" class="centered" (click)="loadTheatres()">Загрузить ещё</button>
-        </ng-template>
-      </div>
-    </div>
+    <ng-template #canGetMoreTemplate1>
+      <button *ngIf="!allTLoaded" class="centered" mat-raised-button color="primary" (click)="loadTheatres()">Загрузить ещё</button>
+    </ng-template>
   </div>
 </div>
 

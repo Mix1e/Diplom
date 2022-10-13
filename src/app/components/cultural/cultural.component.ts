@@ -1,85 +1,72 @@
-import {Component, Injectable, OnInit} from '@angular/core';
-import {ApiCulturalService} from "../../services/api-cultural.service";
-import {EntityId} from "../../enums/entity-id";
+import {ChangeDetectionStrategy, Component, Injectable, OnDestroy, OnInit} from '@angular/core';
 import {IResponse} from "../../interfaces/response.interface";
-import {animate, state, style, transition, trigger} from "@angular/animations";
+import {instanceAnimation} from "../../animations/basic.animation";
+import {CulturalService} from "./cultural.service";
 
 
 @Component({
   selector: 'app-cultural',
   templateUrl: './cultural.component.html',
-  styleUrls: ['./cultural.component.scss'],animations: [
-    trigger('instance', [
-      state('changed', style({background: 'blue'} )),
-      transition(':enter', [
-        style({opacity: 0, transform: 'scale(0.7)'}),
-        animate('450ms')
-      ]),
-      transition(':leave', [
-        style({opacity: 1}),
-        animate('400ms', style({
-          opacity: 0,
-          transform: 'scale(0.7)'
-        }))
-      ])
-    ])
-  ]
+  styleUrls: ['./cultural.component.scss'],
+  animations: [instanceAnimation],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 @Injectable()
-export class CulturalComponent implements OnInit {
+export class CulturalComponent implements OnInit, OnDestroy {
   search: string = "";
-  loadingM: boolean = false;
-  loadingT: boolean = false;
-  allMTLoaded: boolean = false;
-  allTLoaded: boolean = false;
-  errMes: string = "";
 
-  theatres: IResponse[] = [];
-  movieTheatres: IResponse[] = [];
-
-  constructor(private culturalService: ApiCulturalService,
-  ) {
-  }
+  constructor(private culturalService: CulturalService,
+  ) {}
 
   ngOnInit(): void {
-    this.loadMovieTheatres();
-    this.loadTheatres();
+    this.culturalService.initData();
   }
 
   trackByFn = (index: number, element: IResponse) => {
     return element.Cells.CommonName;
   }
 
-  loadMovieTheatres() {
-    this.loadingM = true;
-    this.culturalService.getInfo(EntityId.MOVIE_THEATER, this.movieTheatres?.length).subscribe(
-      response => {
-        let curCount = this.movieTheatres.length;
-        this.movieTheatres = this.movieTheatres.concat(response);
-        this.loadingM = false;
-        if (this.movieTheatres.length % ApiCulturalService.RESPONSE_COUNT != 0 || curCount == this.movieTheatres.length) {
-          this.allMTLoaded = true;
-        }
-      },
-      () => {
-        this.errMes = `Ошибка при загрузке списка кинотеатров`;
-      })
+  get errorMessage() {
+    return this.culturalService.errorMessage;
   }
 
-  loadTheatres() {
-    this.loadingT = true;
-    this.culturalService.getInfo(EntityId.THEATER, this.theatres?.length).subscribe(
-      response => {
-        let curCount = this.theatres.length;
-        this.theatres = this.theatres.concat(response);
-        this.loadingT = false;
-        if (this.theatres.length % ApiCulturalService.RESPONSE_COUNT != 0 || curCount == this.theatres.length) {
-          this.allTLoaded = true;
-        }
-      },
-      () => {
-        this.errMes = `Ошибка при загрузке списка театров`;
-      })
+
+  get movieTheatres$() {
+    return this.culturalService.getMovieTheatres$;
+  }
+
+  get allMTLoaded() {
+    return this.culturalService.isAllMTLoaded;
+  }
+
+  get loadingMT$() {
+    return this.culturalService.isLoadingMovieTheatres$;
+  }
+
+  loadMovieTheatres(): void {
+    this.culturalService.loadMovieTheatres();
+  }
+
+
+  get theatres$() {
+    return this.culturalService.getTheatres$;
+  }
+
+  get loadingT$() {
+    return this.culturalService.isLoadingTheatres$;
+  }
+
+  get allTLoaded() {
+    return this.culturalService.isAllTLoaded;
+  }
+
+  loadTheatres(): void {
+    this.culturalService.loadTheatres();
+  }
+
+
+  ngOnDestroy(): void {
+    this.culturalService.unsubscribeAll();
   }
 }

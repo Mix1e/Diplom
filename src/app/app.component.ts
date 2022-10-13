@@ -1,5 +1,4 @@
-import { Component } from '@angular/core';
-import {ApiCulturalService} from "./services/api-cultural.service";
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-root',

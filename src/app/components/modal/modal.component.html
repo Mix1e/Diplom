@@ -1,14 +1,14 @@
 <div class="modal-container">
-  <h1 mat-dialog-title>{{data.FullName}}</h1>
+  <h1 mat-dialog-title>{{fullName}}</h1>
   <div mat-dialog-content>
     <p class="info">Информация:</p>
-    <p>{{data.ChiefPosition}}: {{data.ChiefName}}</p>
-    <p>{{data.Email | email}}</p>
-    <p>{{data.PublicPhone | phoneNumber}}</p>
-    <p>Веб-сайт: {{data.WebSite}}</p>
+    <p>{{chiefPosition}}: {{chiefName}}</p>
+    <p>{{emails | email}}</p>
+    <p>{{publicPhones | phoneNumber}}</p>
+    <p>Веб-сайт: {{webSite}}</p>
     <div class="work-time">
       <p class="info">Время работы:</p>
-      <p *ngFor="let wh of data.WorkingHours">{{wh.DayWeek}}: {{wh.WorkHours}}</p>
+      <p *ngFor="let wh of workingHours">{{wh.DayWeek}}: {{wh.WorkHours}}</p>
     </div>
   </div>
 </div>
