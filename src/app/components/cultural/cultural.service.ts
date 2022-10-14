@@ -56,7 +56,8 @@ export class CulturalService {
 
   initData() {
     this.loadMovieTheatres();
-    this.loadTheatres();
+    //Сервер иногда выдаёт ошибку если сделать 2 запроса одновременно, да костыль, но работает
+    setTimeout(() => this.loadTheatres(), 1)
   }
 
 
