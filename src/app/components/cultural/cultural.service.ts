@@ -21,14 +21,6 @@ export class CulturalService {
   private readonly loadingT$ = new BehaviorSubject<boolean>(true);
   private theatresSubscription: Subscription;
 
-  /*
-  * 6. private allTLoaded: boolean = false; тоже можно было запихнуть в BehaviorSubject
-
-    7. this.errMes тоже можно было запихнуть в BehaviorSubject
-
-    8. private allMTLoaded: boolean = false; тоже можно было запихнуть в BehaviorSubject
-  * */
-
 
   constructor(private apiCulturalService: ApiCulturalService
   ) {
