@@ -9,9 +9,9 @@ import {IResponse} from "../../interfaces/response.interface";
 })
 export class CulturalService {
 
-  private allMTLoaded: boolean = false;
-  private allTLoaded: boolean = false;
-  private errMes: string = "";
+  private allMTLoaded$ = new BehaviorSubject<boolean>(false);
+  private allTLoaded$ = new BehaviorSubject<boolean>(false);
+  private errMes$ = new BehaviorSubject<string>("");
 
   private readonly movieTheatres$ = new BehaviorSubject<IResponse[]>([]);
   private readonly loadingMT$ = new BehaviorSubject<boolean>(true);
@@ -21,12 +21,21 @@ export class CulturalService {
   private readonly loadingT$ = new BehaviorSubject<boolean>(true);
   private theatresSubscription: Subscription;
 
+  /*
+  * 6. private allTLoaded: boolean = false; тоже можно было запихнуть в BehaviorSubject
+
+    7. this.errMes тоже можно было запихнуть в BehaviorSubject
+
+    8. private allMTLoaded: boolean = false; тоже можно было запихнуть в BehaviorSubject
+  * */
+
+
   constructor(private apiCulturalService: ApiCulturalService
   ) {
   }
 
-  get errorMessage() {
-    return this.errMes;
+  get errorMessage$() {
+    return this.errMes$.asObservable();
   }
 
   get getMovieTheatres$() {
@@ -37,8 +46,8 @@ export class CulturalService {
     return this.loadingMT$.asObservable();
   }
 
-  get isAllMTLoaded() {
-    return this.allMTLoaded;
+  get isAllMTLoaded$() {
+    return this.allMTLoaded$.asObservable();
   }
 
 
@@ -50,16 +59,24 @@ export class CulturalService {
     return this.loadingT$.asObservable();
   }
 
-  get isAllTLoaded() {
-    return this.allTLoaded;
+  get isAllTLoaded$() {
+    return this.allTLoaded$.asObservable();
   }
 
-  initData() {
+  initData():void {
     this.loadMovieTheatres();
     //Сервер иногда выдаёт ошибку если сделать 2 запроса одновременно, да костыль, но работает
     setTimeout(() => this.loadTheatres(), 1);
   }
 
+  private generateError(type: string): void {
+    if (this.errMes$.value) {
+      this.errMes$.next(this.errMes$.value + `и ${type}`);
+    }
+    else {
+      this.errMes$.next(`Ошибка при загрузке списка ${type}`);
+    }
+  }
 
   loadMovieTheatres() {
     this.loadingMT$.next(true);
@@ -67,7 +84,7 @@ export class CulturalService {
       .pipe(
         tap(response => {
           if (response.length % ApiCulturalService.RESPONSE_COUNT != 0) {
-            this.allMTLoaded = true;
+            this.allMTLoaded$.next(true);
           }
           this.movieTheatres$.next([...(this.movieTheatres$.value || []), ...response]);
         }),
@@ -78,7 +95,7 @@ export class CulturalService {
       .subscribe(
         {
           error: () => {
-            this.errMes = `Ошибка при загрузке списка кинотеатров`;
+            this.generateError('кинотеатров');
           }
         })
   }
@@ -89,7 +106,7 @@ export class CulturalService {
       .pipe(
         tap(response => {
           if (response.length % ApiCulturalService.RESPONSE_COUNT != 0) {
-            this.allTLoaded = true;
+            this.allTLoaded$.next(true);
           }
           this.theatres$.next([...(this.theatres$.value || []), ...response]);
         }),
@@ -100,12 +117,13 @@ export class CulturalService {
       .subscribe(
         {
           error: () => {
-            this.errMes = `Ошибка при загрузке списка театров`;
+            this.generateError('театров');
           }
         })
   }
 
-  unsubscribeAll() {
+
+  unsubscribeAll():void {
     this.movieTheatresSubscription.unsubscribe();
     this.theatresSubscription.unsubscribe();
   }

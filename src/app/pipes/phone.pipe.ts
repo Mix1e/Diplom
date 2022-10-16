@@ -5,14 +5,16 @@ import {IPublicPhone} from "../interfaces/public-phone";
   name: 'phoneNumber'
 })
 export class PhonePipe implements PipeTransform {
-  transform(phones?: IPublicPhone[]): string {
-    if (!phones) {
-      return "";
-    }
+  transform(phones?: IPublicPhone[] | IPublicPhone): string {
     let str: string = "Контактные номера: \n";
-    phones.forEach(x => {
-      str += `${x.PublicPhone}, `;
-    })
+    if (Array.isArray(phones)) {
+      phones?.forEach(x => {
+        str += `${x.PublicPhone}, `;
+      })
+    }
+    else {
+      str += phones.PublicPhone;
+    }
     return str.replace(/,\s*$/, "");
   }
 }

@@ -1,4 +1,4 @@
-<mat-toolbar *ngIf="errorMessage as err" color="warn">
+<mat-toolbar *ngIf="(errorMessage$ | async) as err" color="warn">
   <span class="centered">{{err}}</span>
 </mat-toolbar>
 
@@ -21,7 +21,7 @@
     </ng-container>
 
     <ng-template #canGetMoreTemplate>
-      <button *ngIf="!allMTLoaded" class="centered" mat-raised-button color="primary" (click)="loadMovieTheatres()">Загрузить ещё</button>
+      <button *ngIf="!(allMTLoaded$ | async)" class="centered" mat-raised-button color="primary" (click)="loadMovieTheatres()">Загрузить ещё</button>
     </ng-template>
   </div>
 
@@ -35,7 +35,7 @@
     </ng-container>
 
     <ng-template #canGetMoreTemplate1>
-      <button *ngIf="!allTLoaded" class="centered" mat-raised-button color="primary" (click)="loadTheatres()">Загрузить ещё</button>
+      <button *ngIf="!(allTLoaded$ | async)" class="centered" mat-raised-button color="primary" (click)="loadTheatres()">Загрузить ещё</button>
     </ng-template>
   </div>
 </div>

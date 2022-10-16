@@ -5,14 +5,16 @@ import {IEmail} from "../interfaces/email.interface";
   name: 'email'
 })
 export class EmailPipe implements PipeTransform {
-  transform(emails?: IEmail[]): string {
-    if (!emails) {
-      return "";
+  transform(emails?: IEmail[] | IEmail): string {
+    let str: string = "Email: ";
+    if(Array.isArray(emails)) {
+      emails?.forEach(x => {
+        str += `${x.Email}, `;
+      })
     }
-    let str: string = "Email: \n";
-    emails.forEach(x => {
-      str += `${x.Email}\n`;
-    })
-    return str;
+    else {
+      str += emails.Email;
+    }
+    return str.replace(/,\s*$/, "");
   }
 }

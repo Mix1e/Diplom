@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Injectable, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {IResponse} from "../../interfaces/response.interface";
 import {instanceAnimation} from "../../animations/basic.animation";
 import {CulturalService} from "./cultural.service";
@@ -12,7 +12,6 @@ import {CulturalService} from "./cultural.service";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-@Injectable()
 export class CulturalComponent implements OnInit, OnDestroy {
   search: string = "";
 
@@ -27,8 +26,8 @@ export class CulturalComponent implements OnInit, OnDestroy {
     return element.Cells.CommonName;
   }
 
-  get errorMessage() {
-    return this.culturalService.errorMessage;
+  get errorMessage$() {
+    return this.culturalService.errorMessage$;
   }
 
 
@@ -36,8 +35,8 @@ export class CulturalComponent implements OnInit, OnDestroy {
     return this.culturalService.getMovieTheatres$;
   }
 
-  get allMTLoaded() {
-    return this.culturalService.isAllMTLoaded;
+  get allMTLoaded$() {
+    return this.culturalService.isAllMTLoaded$;
   }
 
   get loadingMT$() {
@@ -57,8 +56,8 @@ export class CulturalComponent implements OnInit, OnDestroy {
     return this.culturalService.isLoadingTheatres$;
   }
 
-  get allTLoaded() {
-    return this.culturalService.isAllTLoaded;
+  get allTLoaded$() {
+    return this.culturalService.isAllTLoaded$;
   }
 
   loadTheatres(): void {
