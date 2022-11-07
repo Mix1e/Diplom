@@ -8,4 +8,4 @@ import {Component} from '@angular/core';
 export class AppComponent {
   title = 'Cultural';
 }
-//Фича в мейн
+//Commit test 5
