@@ -1,4 +1,4 @@
-package com.diplom.styleidentifier.app.neuronet;
+package com.diplom.styleidentifier.common.neuronet;
 
 public class Layer {
 

@@ -1,7 +1,7 @@
-package com.diplom.styleidentifier.app.handler.neuronet;
+package com.diplom.styleidentifier.common.services;
 
-import com.diplom.styleidentifier.app.handler.audio.AudioHelper;
-import com.diplom.styleidentifier.app.neuronet.MultiLayerPerceptron;
+import com.diplom.styleidentifier.common.handler.audio.AudioHelper;
+import com.diplom.styleidentifier.common.neuronet.MultiLayerPerceptron;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;

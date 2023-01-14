@@ -1,6 +1,6 @@
-package com.diplom.styleidentifier.app.handler.audio;
+package com.diplom.styleidentifier.common.handler.audio;
 
-import com.diplom.styleidentifier.app.enums.EStyle;
+import com.diplom.styleidentifier.common.enums.EStyle;
 
 public class AudioData {
 

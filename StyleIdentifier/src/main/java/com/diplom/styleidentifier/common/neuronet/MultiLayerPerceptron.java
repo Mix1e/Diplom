@@ -1,7 +1,7 @@
-package com.diplom.styleidentifier.app.neuronet;
+package com.diplom.styleidentifier.common.neuronet;
 
-import com.diplom.styleidentifier.app.enums.EStyle;
-import com.diplom.styleidentifier.app.handler.audio.AudioData;
+import com.diplom.styleidentifier.common.enums.EStyle;
+import com.diplom.styleidentifier.common.handler.audio.AudioData;
 
 import java.util.List;
 import java.util.function.UnaryOperator;

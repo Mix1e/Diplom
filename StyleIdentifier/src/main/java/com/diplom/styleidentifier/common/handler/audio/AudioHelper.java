@@ -1,5 +1,5 @@
-package com.diplom.styleidentifier.app.handler.audio;
-import com.diplom.styleidentifier.app.enums.EStyle;
+package com.diplom.styleidentifier.common.handler.audio;
+import com.diplom.styleidentifier.common.enums.EStyle;
 import org.quifft.QuiFFT;
 import org.quifft.output.FFTResult;
 import org.quifft.params.WindowFunction;
