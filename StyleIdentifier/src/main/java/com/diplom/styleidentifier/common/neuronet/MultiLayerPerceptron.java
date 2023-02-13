@@ -3,10 +3,11 @@ package com.diplom.styleidentifier.common.neuronet;
 import com.diplom.styleidentifier.common.enums.EStyle;
 import com.diplom.styleidentifier.common.handler.audio.AudioData;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
-public class MultiLayerPerceptron {
+public class MultiLayerPerceptron implements Serializable {
 
     private double learningRate;
     private Layer[] layers;
@@ -90,7 +91,7 @@ public class MultiLayerPerceptron {
     }
 
     public void learn(List<AudioData> data, int epochs) {
-        for (int i = 1; i < epochs; i++) {
+        for (int i = 0; i < epochs; i++) {
             int right = 0;
             double errorSum = 0;
             for (int j = 0; j < data.size(); j++) {
@@ -127,6 +128,5 @@ public class MultiLayerPerceptron {
             }
             System.out.println("epoch: " + i + ". correct: " + right + ". error: " + errorSum);
         }
-
     }
 }

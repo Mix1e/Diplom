@@ -1,6 +1,8 @@
 package com.diplom.styleidentifier.common.neuronet;
 
-public class Layer {
+import java.io.Serializable;
+
+public class Layer implements Serializable {
 
     public int size;
     public double[] neurons;

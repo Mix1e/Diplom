@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.util.function.UnaryOperator;
 
 public class NeuronetService {
-    private static final String DEFAULT_DATASET_PATH = "dataset\\genres_original";
-    private static final double DEFAULT_LEARN_RATE = 0.1;
     private AudioHelper audioHelper;
     private MultiLayerPerceptron multiLayerPerceptron;
     private UnaryOperator<Double> sigmoid = x -> 1/ (1+Math.exp(-x));
@@ -18,8 +16,16 @@ public class NeuronetService {
     public NeuronetService() {
     }
 
-    public void loadDataset() throws UnsupportedAudioFileException, IOException {
-        audioHelper = new AudioHelper(DEFAULT_DATASET_PATH);
+    public AudioHelper getAudioHelper() {
+        return audioHelper;
+    }
+
+    public MultiLayerPerceptron getMultiLayerPerceptron() {
+        return multiLayerPerceptron;
+    }
+
+    public void setMultiLayerPerceptron(MultiLayerPerceptron multiLayerPerceptron) {
+        this.multiLayerPerceptron = multiLayerPerceptron;
     }
 
     public void loadDataset(String datasetPath) throws UnsupportedAudioFileException, IOException {
