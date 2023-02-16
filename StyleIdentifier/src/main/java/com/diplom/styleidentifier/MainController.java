@@ -1,5 +1,6 @@
 package com.diplom.styleidentifier;
 
+import com.diplom.styleidentifier.common.handler.audio.AudioHelper;
 import com.diplom.styleidentifier.common.neuronet.MultiLayerPerceptron;
 import com.diplom.styleidentifier.common.services.NeuronetService;
 import com.diplom.styleidentifier.common.services.StorageService;
@@ -27,19 +28,19 @@ public class MainController {
     private TextArea logsTextArea;
     @FXML
     protected void onLearnButtonClick() {
-//        if(this.storageService.isDatasetPathSpecified()) {
+        if(this.neuronetService.getMultiLayerPerceptron() != null) {
             Thread learnNeuronetTread = new LearnNeuronetThread(neuronetService, this.storageService.getDatasetPath(), logsTextArea);
             learnNeuronetTread.start();
-        /*} else {
+        } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Не найден путь до датасета!");
-            alert.setHeaderText("Необходимо выбрать папку с датасетом для обучения. \nВ директории программы есть стандартный датасет содержащий 10 жанров");
+            alert.setTitle("Не найдена нейронная сеть!");
+            alert.setHeaderText("Необходимо создать или загрузить уже существующаю сеть.");
             alert.showAndWait().ifPresent(rs -> {
                 if (rs == ButtonType.OK) {
                     System.out.println("Pressed OK.");
                 }
             });
-        }*/
+        }
     }
 
     @FXML
@@ -65,6 +66,7 @@ public class MainController {
     protected void onCreateNeuronetButtonClick() {
         this.neuronetService.createNeuronet(0.01);
     }
+
 
     @FXML
     protected void onSaveNetworkButtonClick() throws IOException {
@@ -102,6 +104,35 @@ public class MainController {
                 ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(loadingFile.getPath()));
                 this.neuronetService.setMultiLayerPerceptron((MultiLayerPerceptron) inputStream.readObject());
                 inputStream.close();
+
+                this.neuronetService.getMultiLayerPerceptron().setActivation(this.neuronetService.getSigmoid());
+                this.neuronetService.getMultiLayerPerceptron().setDerivative(this.neuronetService.getDsigmoid());
+            }
+            catch (Exception ex) {
+                System.err.println(ex);
+            }
+        }
+    }
+
+    @FXML
+    protected void onRecognizeButtonClick() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Выберите запись");
+
+        fileChooser.setInitialDirectory(new File(
+                Paths.get("dataset/genres_original")
+                        .toAbsolutePath()
+                        .toUri()
+        ));
+        File audioFile = fileChooser.showOpenDialog(null);
+
+        if(audioFile != null) {
+            try {
+                AudioHelper audioHelper = new AudioHelper();
+
+                this.neuronetService.classifyAudioFile(
+                        audioHelper.calculateAudioData(audioFile.getPath())
+                );
             }
             catch (Exception ex) {
                 System.err.println(ex);

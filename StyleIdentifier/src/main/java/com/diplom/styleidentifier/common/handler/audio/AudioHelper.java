@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,9 +23,13 @@ public class AudioHelper {
     private static int powerDensityCount;
     private static int frequencyCount;
 
+    public AudioHelper() {
+    }
+
     public AudioHelper(String datasetPath) throws UnsupportedAudioFileException, IOException {
         data = new LinkedList<AudioData>();
         getDataSet(new File(datasetPath), null);
+        Collections.shuffle(this.data);
     }
 
     public List<AudioData> getData() {
@@ -55,7 +60,7 @@ public class AudioHelper {
         }
     }
 
-    private AudioData calculateAudioData(String path) throws UnsupportedAudioFileException, IOException {
+    public AudioData calculateAudioData(String path) throws UnsupportedAudioFileException, IOException {
         FFTResult fft = new QuiFFT(path)
                 .windowFunction(WindowFunction.HAMMING)
                 .windowSize(WINDOW_SIZE)

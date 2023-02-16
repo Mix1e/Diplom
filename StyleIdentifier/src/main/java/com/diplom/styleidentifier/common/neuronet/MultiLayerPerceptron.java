@@ -4,6 +4,7 @@ import com.diplom.styleidentifier.common.enums.EStyle;
 import com.diplom.styleidentifier.common.handler.audio.AudioData;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
@@ -11,8 +12,8 @@ public class MultiLayerPerceptron implements Serializable {
 
     private double learningRate;
     private Layer[] layers;
-    private UnaryOperator<Double> activation;
-    private UnaryOperator<Double> derivative;
+    private transient UnaryOperator<Double> activation;
+    private transient UnaryOperator<Double> derivative;
 
     public MultiLayerPerceptron(double learningRate, UnaryOperator<Double> activation, UnaryOperator<Double> derivative, int... sizes) {
         this.learningRate = learningRate;
@@ -30,6 +31,23 @@ public class MultiLayerPerceptron implements Serializable {
                 }
             }
         }
+
+    }
+
+    public UnaryOperator<Double> getActivation() {
+        return activation;
+    }
+
+    public void setActivation(UnaryOperator<Double> activation) {
+        this.activation = activation;
+    }
+
+    public UnaryOperator<Double> getDerivative() {
+        return derivative;
+    }
+
+    public void setDerivative(UnaryOperator<Double> derivative) {
+        this.derivative = derivative;
     }
 
     public double[] feedForward(double[] inputs) {
@@ -90,6 +108,39 @@ public class MultiLayerPerceptron implements Serializable {
         }
     }
 
+    public double[] inputsFromSpectrogram(double[][] spec) {
+        double[] inputs = new double[spec.length*spec[0].length/4];
+
+        int m = 0;
+        for (int k = 0; k < spec.length/4; k++) {
+            for(double n : spec[k]) {
+                inputs[m++] = n;
+            }
+        }
+        return inputs;
+    }
+
+    public void classify(AudioData audio) {
+        double[] inputs = this.inputsFromSpectrogram(audio.getSpectrogram());
+
+        double[] outputs = feedForward(inputs);
+
+        for(int i = 0; i < EStyle.values().length; i++) {
+            System.out.println(EStyle.values()[i] +" = " + outputs[i]);
+        }
+
+        System.out.println("Right genre: " + audio.getStyle());
+        System.out.println("---------------------------------\n");
+    }
+
+    private void printArray2(double[][] mas) {
+        for (int i = 0; i < mas.length; i++) {
+            for (int j = 0; j < mas[0].length; j++) {
+                System.out.print(mas[i][j] + (i == mas.length - 1 ? "\n" : ", "));
+            }
+        }
+    }
+
     public void learn(List<AudioData> data, int epochs) {
         for (int i = 0; i < epochs; i++) {
             int right = 0;
@@ -100,15 +151,7 @@ public class MultiLayerPerceptron implements Serializable {
                 targets[audio.getStyle().ordinal()] = 1;
 
                 double[][] spec = audio.getSpectrogram();
-                double[] inputs = new double[spec.length*spec[0].length/4];
-
-                int m = 0;
-                for (int k = 0; k < spec.length/4; k++) {
-                    for(double n : spec[k]) {
-                        inputs[m++] = n;
-                    }
-                }
-                System.out.println(audio.getStyle());
+                double[] inputs = this.inputsFromSpectrogram(spec);
 
                 double[] outputs = feedForward(inputs);
 
