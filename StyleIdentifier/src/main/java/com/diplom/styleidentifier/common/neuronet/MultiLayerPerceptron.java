@@ -4,7 +4,6 @@ import com.diplom.styleidentifier.common.enums.EStyle;
 import com.diplom.styleidentifier.common.handler.audio.AudioData;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
@@ -108,20 +107,21 @@ public class MultiLayerPerceptron implements Serializable {
         }
     }
 
-    public double[] inputsFromSpectrogram(double[][] spec) {
-        double[] inputs = new double[spec.length*spec[0].length/4];
-
-        int m = 0;
-        for (int k = 0; k < spec.length/4; k++) {
-            for(double n : spec[k]) {
-                inputs[m++] = n;
-            }
-        }
-        return inputs;
+    public double[] inputsFromAudioData(AudioData audioData) {
+        return new double[] {
+            audioData.getBpm(),
+            audioData.getAmplitudeAverage(),
+            audioData.getAmplitudeDifference(),
+            audioData.getRsmAverage(),
+            audioData.getRsmDifference(),
+            audioData.getZrcAverage(),
+            audioData.getZrcDifference(),
+            audioData.getBandwidthDifference()
+        };
     }
 
     public void classify(AudioData audio) {
-        double[] inputs = this.inputsFromSpectrogram(audio.getSpectrogram());
+        double[] inputs = this.inputsFromAudioData(audio);
 
         double[] outputs = feedForward(inputs);
 
@@ -133,14 +133,6 @@ public class MultiLayerPerceptron implements Serializable {
         System.out.println("---------------------------------\n");
     }
 
-    private void printArray2(double[][] mas) {
-        for (int i = 0; i < mas.length; i++) {
-            for (int j = 0; j < mas[0].length; j++) {
-                System.out.print(mas[i][j] + (i == mas.length - 1 ? "\n" : ", "));
-            }
-        }
-    }
-
     public void learn(List<AudioData> data, int epochs) {
         for (int i = 0; i < epochs; i++) {
             int right = 0;
@@ -150,8 +142,7 @@ public class MultiLayerPerceptron implements Serializable {
                 double[] targets = new double[EStyle.values().length];
                 targets[audio.getStyle().ordinal()] = 1;
 
-                double[][] spec = audio.getSpectrogram();
-                double[] inputs = this.inputsFromSpectrogram(spec);
+                double[] inputs = this.inputsFromAudioData(audio);
 
                 double[] outputs = feedForward(inputs);
 

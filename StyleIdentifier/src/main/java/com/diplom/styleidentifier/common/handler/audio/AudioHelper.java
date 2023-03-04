@@ -1,15 +1,21 @@
 package com.diplom.styleidentifier.common.handler.audio;
 import com.diplom.styleidentifier.common.enums.EStyle;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.quifft.QuiFFT;
 import org.quifft.output.FFTResult;
 import org.quifft.params.WindowFunction;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -18,6 +24,8 @@ import java.util.List;
 public class AudioHelper {
 
     private List<AudioData> data;
+    private final String SCRIPT_START = "C:\\diplom\\AudioTransformator\\venv\\Scripts\\python.exe C:\\diplom\\AudioTransformator\\main.py ";
+
     private static final int WINDOW_SIZE = 1024;
     private static final int DATA_SIZE = 640;
     private static int powerDensityCount;
@@ -35,17 +43,8 @@ public class AudioHelper {
     public List<AudioData> getData() {
         return data;
     }
-
     public void setData(List<AudioData> data) {
         this.data = data;
-    }
-
-    public static int getFrequencyCount() {
-        return frequencyCount;
-    }
-
-    public static int getDataSize() {
-        return DATA_SIZE;
     }
 
     void getDataSet(File folder, List<File> fileList) throws UnsupportedAudioFileException, IOException {
@@ -60,29 +59,51 @@ public class AudioHelper {
         }
     }
 
-    public AudioData calculateAudioData(String path) throws UnsupportedAudioFileException, IOException {
-        FFTResult fft = new QuiFFT(path)
-                .windowFunction(WindowFunction.HAMMING)
-                .windowSize(WINDOW_SIZE)
-                .fullFFT();
-        String fName = fft.fileName;
-        powerDensityCount = (int)(fft.fileDurationMs/fft.windowDurationMs);
-        frequencyCount = fft.fftFrames[0].bins.length/2;
-        double[][] specDensity = new double[powerDensityCount][frequencyCount];
-        int x = specDensity.length;
-        for (int i = 0; i < x; i++) {
-            for(int j = 0; j< frequencyCount; j++) {
-                specDensity[i][frequencyCount-j-1] = Math.pow(10, fft.fftFrames[i*2].bins[j*2].amplitude/10);
+    public AudioData calculateAudioData(String path) throws IOException {
+        Process p = Runtime.getRuntime().exec(SCRIPT_START + path);
+        BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+        String s, out = "";
+        while ((s = stdInput.readLine()) != null) {
+            out += s;
+        }
+        stdInput.close();
+        p.destroy();
+
+        System.out.println(out);
+
+        JsonObject jsonResponse = new Gson().fromJson(out, JsonObject.class);
+        AudioData audioData = new AudioData(
+                EStyle.valueOf(jsonResponse.get("style").getAsString()),
+                jsonResponse.get("bpm").getAsDouble(),
+                jsonResponse.get("amplitude_difference").getAsDouble(),
+                jsonResponse.get("amplitude_average").getAsDouble(),
+                jsonResponse.get("rms_difference").getAsDouble(),
+                jsonResponse.get("rms_average").getAsDouble(),
+                jsonResponse.get("zcr_difference").getAsDouble(),
+                jsonResponse.get("zcr_average").getAsDouble(),
+                jsonResponse.get("bandwidth_difference").getAsDouble()
+        );
+        return audioData;
+    }
+
+
+    public static int calculate(int sampleRate, short[] audioData) {
+        int numSamples = audioData.length;
+        int numCrossing = 0;
+        for (int p = 0; p < numSamples-1; p++)
+        {
+            if ((audioData[p] > 0 && audioData[p + 1] <= 0) ||
+                    (audioData[p] < 0 && audioData[p + 1] >= 0))
+            {
+                numCrossing++;
             }
         }
-        //saveSpectrogram(specDensity, fName);
-        return new AudioData(EStyle.valueOf(fName.substring(0, fName.indexOf('.')).toUpperCase()), makeDataUnified(specDensity));
+        float numSecondsRecorded = (float)numSamples/(float)sampleRate;
+        float numCycles = numCrossing/2;
+        float frequency = numCycles/numSecondsRecorded;
+        return (int)frequency;
     }
-
-    private double[][] makeDataUnified(double[][] specDensity) {
-        return Arrays.copyOfRange(specDensity, 0, DATA_SIZE);
-    }
-
 
     private double[][] normalize(double[][] specDensity) {
         double[] maxes = new double[powerDensityCount];

@@ -7,6 +7,7 @@ import com.diplom.styleidentifier.common.neuronet.MultiLayerPerceptron;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
+import java.util.List;
 import java.util.function.UnaryOperator;
 
 public class NeuronetService {
@@ -29,6 +30,9 @@ public class NeuronetService {
     public AudioHelper getAudioHelper() {
         return audioHelper;
     }
+    public void setAudioHelper(AudioHelper audioHelper) {
+        this.audioHelper = audioHelper;
+    }
 
     public MultiLayerPerceptron getMultiLayerPerceptron() {
         return multiLayerPerceptron;
@@ -38,13 +42,20 @@ public class NeuronetService {
         this.multiLayerPerceptron = multiLayerPerceptron;
     }
 
+    public List<AudioData> getDataset() {
+        return audioHelper.getData();
+    }
+
+    public void setDataset(List<AudioData> data) {
+        audioHelper.setData(data);
+    }
+
     public void loadDataset(String datasetPath) throws UnsupportedAudioFileException, IOException {
         audioHelper = new AudioHelper(datasetPath);
     }
 
-    //TODO: сжать количество входных данных
     public void createNeuronet(double learnRate) {
-        multiLayerPerceptron = new MultiLayerPerceptron(learnRate, sigmoid, dsigmoid, 40960, 640, 10);
+        multiLayerPerceptron = new MultiLayerPerceptron(learnRate, sigmoid, dsigmoid, AudioData.INPUT_NEURON_COUNT, 18, 10);
     }
 
     public void learnNeuronet(int epochs) {

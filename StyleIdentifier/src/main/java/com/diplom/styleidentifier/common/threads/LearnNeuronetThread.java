@@ -21,8 +21,8 @@ public class LearnNeuronetThread extends Thread {
     @Override
     public void run() {
         try {
-            this.neuronetService.loadDataset(datasetPath == null ? StorageService.DEFAULT_DATASET_PATH : datasetPath);
-            this.neuronetService.learnNeuronet(1);
+            //this.neuronetService.loadDataset(datasetPath == null ? StorageService.DEFAULT_DATASET_PATH : datasetPath);
+            this.neuronetService.learnNeuronet(15000);
         } catch (Exception ex) {
             System.err.println(ex);
         }

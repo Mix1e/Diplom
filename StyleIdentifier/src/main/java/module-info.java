@@ -11,6 +11,7 @@ module com.diplom.styleidentifier {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires quifft;
+    requires com.google.gson;
 
     opens com.diplom.styleidentifier to javafx.fxml;
     exports com.diplom.styleidentifier;

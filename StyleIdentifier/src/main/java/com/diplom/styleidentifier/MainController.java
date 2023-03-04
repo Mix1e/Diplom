@@ -1,11 +1,15 @@
 package com.diplom.styleidentifier;
 
+import com.diplom.styleidentifier.common.enums.EStyle;
+import com.diplom.styleidentifier.common.handler.audio.AudioData;
 import com.diplom.styleidentifier.common.handler.audio.AudioHelper;
 import com.diplom.styleidentifier.common.neuronet.MultiLayerPerceptron;
 import com.diplom.styleidentifier.common.services.NeuronetService;
 import com.diplom.styleidentifier.common.services.StorageService;
 import com.diplom.styleidentifier.common.threads.LearnNeuronetThread;
-import javafx.event.ActionEvent;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -14,8 +18,12 @@ import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
+import java.lang.reflect.Field;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.List;
 
 public class MainController {
     private NeuronetService neuronetService = new NeuronetService();
@@ -44,6 +52,52 @@ public class MainController {
     }
 
     @FXML
+    protected void onLoadSavedDatasetClick() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Выберите датасет");
+
+        fileChooser.setInitialDirectory(new File(
+                Paths.get("calculated-dataset")
+                        .toAbsolutePath()
+                        .toUri()
+        ));
+        File loadingFile = fileChooser.showOpenDialog(null);
+
+        this.neuronetService.setAudioHelper(new AudioHelper());
+        if(loadingFile != null) {
+            try {
+                ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(loadingFile.getPath()));
+                this.neuronetService.setDataset((List<AudioData>) inputStream.readObject());
+                inputStream.close();
+
+                System.out.println(this.neuronetService.getDataset().get(0).toString());
+            }
+            catch (Exception ex) {
+                System.err.println(ex);
+            }
+        }
+    }
+    @FXML
+    protected void testClick() throws IOException, UnsupportedAudioFileException {
+        FileChooser fileChooser = new FileChooser();
+
+        fileChooser.setTitle("Сохранение сети");
+        fileChooser.setInitialDirectory(new File(
+                Paths.get("calculated-dataset")
+                        .toAbsolutePath()
+                        .toUri()
+        ));
+        File savingFile = fileChooser.showSaveDialog(null);
+
+        if(savingFile != null) {
+            ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(savingFile.getPath()));
+            this.neuronetService.loadDataset(StorageService.DEFAULT_DATASET_PATH);
+            outputStream.writeObject(this.neuronetService.getDataset());
+            outputStream.close();
+        }
+    }
+
+    @FXML
     protected void onChoseDatasetButtonClick() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
 
@@ -64,7 +118,7 @@ public class MainController {
 
     @FXML
     protected void onCreateNeuronetButtonClick() {
-        this.neuronetService.createNeuronet(0.01);
+        this.neuronetService.createNeuronet(0.065);
     }
 
 
