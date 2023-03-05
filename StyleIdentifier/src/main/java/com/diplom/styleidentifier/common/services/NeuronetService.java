@@ -3,18 +3,25 @@ package com.diplom.styleidentifier.common.services;
 import com.diplom.styleidentifier.common.enums.EStyle;
 import com.diplom.styleidentifier.common.handler.audio.AudioData;
 import com.diplom.styleidentifier.common.handler.audio.AudioHelper;
+import com.diplom.styleidentifier.common.models.NeuronetLearnResult;
 import com.diplom.styleidentifier.common.neuronet.MultiLayerPerceptron;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
 public class NeuronetService {
+    public static final String DEFAULT_DATASET_PATH = "dataset\\genres_original";
     private AudioHelper audioHelper;
     private MultiLayerPerceptron multiLayerPerceptron;
+    private String datasetPath;
     private UnaryOperator<Double> sigmoid = x -> 1/ (1+Math.exp(-x));
     private UnaryOperator<Double> dsigmoid = y -> y * (1-y);
+
+    public NeuronetService() {
+    }
 
     public UnaryOperator<Double> getSigmoid() {
         return sigmoid;
@@ -24,14 +31,16 @@ public class NeuronetService {
         return dsigmoid;
     }
 
-    public NeuronetService() {
+    public String getDatasetPath() {
+        return datasetPath;
     }
 
-    public AudioHelper getAudioHelper() {
-        return audioHelper;
+    public void setDatasetPath(String datasetPath) {
+        this.datasetPath = datasetPath;
     }
-    public void setAudioHelper(AudioHelper audioHelper) {
-        this.audioHelper = audioHelper;
+
+    public boolean isDatasetPathSpecified () {
+        return datasetPath != null;
     }
 
     public MultiLayerPerceptron getMultiLayerPerceptron() {
@@ -46,23 +55,73 @@ public class NeuronetService {
         return audioHelper.getData();
     }
 
-    public void setDataset(List<AudioData> data) {
-        audioHelper.setData(data);
+    public void loadSavedDataset(List<AudioData> data) {
+        audioHelper = new AudioHelper(data);
     }
 
     public void loadDataset(String datasetPath) throws UnsupportedAudioFileException, IOException {
         audioHelper = new AudioHelper(datasetPath);
     }
 
-    public void createNeuronet(double learnRate) {
-        multiLayerPerceptron = new MultiLayerPerceptron(learnRate, sigmoid, dsigmoid, AudioData.INPUT_NEURON_COUNT, 18, 10);
+    public void createNeuronet(double learnRate, int hiddenLayerNeurons) {
+        multiLayerPerceptron = new MultiLayerPerceptron(learnRate, sigmoid, dsigmoid, AudioData.INPUT_NEURON_COUNT, hiddenLayerNeurons, AudioHelper.STYLES_COUNT);
     }
 
     public void learnNeuronet(int epochs) {
-        multiLayerPerceptron.learn(audioHelper.getData(), epochs);
+        learnByEpochs(audioHelper.getData(), epochs);
+    }
+
+    public void learnNeuronet(double errorPercent) {
+        learnUntilError(audioHelper.getData(), errorPercent);
     }
 
     public void classifyAudioFile(AudioData audioData) {
-        this.multiLayerPerceptron.classify(audioData);
+        classify(audioData);
     }
+
+
+    public void classify(AudioData audio) {
+        double[] inputs = MultiLayerPerceptron.inputsFromAudioData(audio);
+
+        double[] outputs = multiLayerPerceptron.feedForward(inputs);
+        int maxAt = 0;
+
+        for(int i = 0; i < AudioHelper.STYLES_COUNT; i++) {
+            System.out.println(EStyle.values()[i] +" = " + outputs[i]);
+            maxAt = outputs[i] > outputs[maxAt] ? i : maxAt;
+        }
+
+        System.out.println("Guess it: " + EStyle.values()[maxAt]);
+    }
+
+    public void learnByEpochs(List<AudioData> data, int epochs) {
+        for (int i = 0; i < epochs; i++) {
+            NeuronetLearnResult learnResult = multiLayerPerceptron.learn(data);
+            visualizeLearningResults(i, learnResult);
+        }
+    }
+
+    public void learnUntilError(List<AudioData> data, double errorPercent) {
+        int epochs = 0;
+
+        double currentError = 1;
+        while (errorPercent < currentError) {
+            NeuronetLearnResult learnResult = this.multiLayerPerceptron.learn(data);
+            currentError = (1 - Double.valueOf(learnResult.getRight())/Double.valueOf(data.size()));
+
+            visualizeLearningResults(++epochs, learnResult);
+        }
+
+        String result = MessageFormat.format(
+                "Заданный коээфициент в {0}% получен, для этого потребовалось {1} эпох обучения.",
+                Double.valueOf(errorPercent * 100),
+                epochs
+        );
+        System.out.println(result);
+    }
+
+    private void visualizeLearningResults(int number, NeuronetLearnResult learnResult) {
+        System.out.println("epoch: " + (number + 1) + ". correct: " + learnResult.getRight() + ". error: " + learnResult.getErrorSum());
+    }
+
 }

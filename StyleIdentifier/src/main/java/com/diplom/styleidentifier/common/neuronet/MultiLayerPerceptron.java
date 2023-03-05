@@ -2,8 +2,11 @@ package com.diplom.styleidentifier.common.neuronet;
 
 import com.diplom.styleidentifier.common.enums.EStyle;
 import com.diplom.styleidentifier.common.handler.audio.AudioData;
+import com.diplom.styleidentifier.common.handler.audio.AudioHelper;
+import com.diplom.styleidentifier.common.models.NeuronetLearnResult;
 
 import java.io.Serializable;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
@@ -33,16 +36,8 @@ public class MultiLayerPerceptron implements Serializable {
 
     }
 
-    public UnaryOperator<Double> getActivation() {
-        return activation;
-    }
-
     public void setActivation(UnaryOperator<Double> activation) {
         this.activation = activation;
-    }
-
-    public UnaryOperator<Double> getDerivative() {
-        return derivative;
     }
 
     public void setDerivative(UnaryOperator<Double> derivative) {
@@ -107,7 +102,7 @@ public class MultiLayerPerceptron implements Serializable {
         }
     }
 
-    public double[] inputsFromAudioData(AudioData audioData) {
+    public static double[] inputsFromAudioData(AudioData audioData) {
         return new double[] {
             audioData.getBpm(),
             audioData.getAmplitudeAverage(),
@@ -120,47 +115,35 @@ public class MultiLayerPerceptron implements Serializable {
         };
     }
 
-    public void classify(AudioData audio) {
-        double[] inputs = this.inputsFromAudioData(audio);
+    public NeuronetLearnResult learn(List<AudioData> data) {
+        int right = 0;
+        double errorSum = 0;
+        for (int j = 0; j < data.size(); j++) {
+            AudioData audio = data.get(j);
+            double[] targets = new double[AudioHelper.STYLES_COUNT];
+            targets[audio.getStyle().ordinal()] = 1;
 
-        double[] outputs = feedForward(inputs);
+            double[] inputs = inputsFromAudioData(audio);
 
-        for(int i = 0; i < EStyle.values().length; i++) {
-            System.out.println(EStyle.values()[i] +" = " + outputs[i]);
-        }
+            double[] outputs = feedForward(inputs);
 
-        System.out.println("Right genre: " + audio.getStyle());
-        System.out.println("---------------------------------\n");
-    }
-
-    public void learn(List<AudioData> data, int epochs) {
-        for (int i = 0; i < epochs; i++) {
-            int right = 0;
-            double errorSum = 0;
-            for (int j = 0; j < data.size(); j++) {
-                AudioData audio = data.get(j);
-                double[] targets = new double[EStyle.values().length];
-                targets[audio.getStyle().ordinal()] = 1;
-
-                double[] inputs = this.inputsFromAudioData(audio);
-
-                double[] outputs = feedForward(inputs);
-
-                int maxDigit = 0;
-                double maxDigitWeight = -1;
-                for (int k = 0; k < 10; k++) {
-                    if(outputs[k] > maxDigitWeight) {
-                        maxDigitWeight = outputs[k];
-                        maxDigit = k;
-                    }
+            int maxDigit = 0;
+            double maxDigitWeight = -1;
+            for (int k = 0; k < 10; k++) {
+                if(outputs[k] > maxDigitWeight) {
+                    maxDigitWeight = outputs[k];
+                    maxDigit = k;
                 }
-                if(audio.getStyle().ordinal() == maxDigit) right++;
-                for (int k = 0; k < 10; k++) {
-                    errorSum += (targets[k] - outputs[k]) * (targets[k] - outputs[k]);
-                }
-                backpropagation(targets);
             }
-            System.out.println("epoch: " + i + ". correct: " + right + ". error: " + errorSum);
+            if(audio.getStyle().ordinal() == maxDigit) right++;
+            for (int k = 0; k < 10; k++) {
+                errorSum += Math.pow((targets[k] - outputs[k]), 2);
+            }
+            backpropagation(targets);
         }
+        return new NeuronetLearnResult(right, errorSum);
     }
 }
+
+
+

@@ -5,9 +5,7 @@ import com.diplom.styleidentifier.common.enums.EStyle;
 import java.io.Serializable;
 
 public class AudioData implements Serializable {
-
     public static int INPUT_NEURON_COUNT = 8;
-
     private EStyle style;
     private double bpm;
     private double amplitudeDifference;
@@ -17,6 +15,17 @@ public class AudioData implements Serializable {
     private double zrcDifference;
     private double zrcAverage;
     private double bandwidthDifference;
+
+    public AudioData(double bpm, double amplitudeDifference, double amplitudeAverage, double rsmDifference, double rsmAverage, double zrcDifference, double zrcAverage, double bandwidthDifference) {
+        this.bpm = bpm;
+        this.amplitudeDifference = amplitudeDifference;
+        this.amplitudeAverage = amplitudeAverage;
+        this.rsmDifference = rsmDifference;
+        this.rsmAverage = rsmAverage;
+        this.zrcDifference = zrcDifference;
+        this.zrcAverage = zrcAverage;
+        this.bandwidthDifference = bandwidthDifference;
+    }
 
 
     public AudioData(EStyle style, double bpm, double amplitudeDifference, double amplitudeAverage, double rsmDifference, double rsmAverage, double zrcDifference, double zrcAverage, double bandwidthDifference) {

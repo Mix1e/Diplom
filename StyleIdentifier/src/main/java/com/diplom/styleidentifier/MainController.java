@@ -1,53 +1,113 @@
 package com.diplom.styleidentifier;
 
-import com.diplom.styleidentifier.common.enums.EStyle;
 import com.diplom.styleidentifier.common.handler.audio.AudioData;
 import com.diplom.styleidentifier.common.handler.audio.AudioHelper;
 import com.diplom.styleidentifier.common.neuronet.MultiLayerPerceptron;
 import com.diplom.styleidentifier.common.services.NeuronetService;
-import com.diplom.styleidentifier.common.services.StorageService;
 import com.diplom.styleidentifier.common.threads.LearnNeuronetThread;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
-import java.lang.reflect.Field;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.List;
 
 public class MainController {
     private NeuronetService neuronetService = new NeuronetService();
-
-    private StorageService storageService = new StorageService();
 
     @FXML
     private ImageView datasetChosenImage;
     @FXML
     private TextArea logsTextArea;
     @FXML
+    private TextField learnRateTextField;
+    @FXML
+    private TextField hiddenLayerNeuronsTestField;
+    @FXML
+    private TextField epochsCountTextField;
+    @FXML
+    private Toggle learnUntilToggle;
+    @FXML
+    private TextField errorSumValueTextField;
+
+
+    private void showAlert(Alert.AlertType type, String title, String header) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.showAndWait().ifPresent(rs -> {
+        });
+    }
+
+    //Tab1
+    @FXML
+    protected void onCreateNeuronetButtonClick() {
+        try {
+            double learnRate = Double.parseDouble(learnRateTextField.getText());
+            int hiddenLayerNeurons = Integer.parseInt(hiddenLayerNeuronsTestField.getText());
+            this.neuronetService.createNeuronet(learnRate, hiddenLayerNeurons);
+        }
+        catch (Exception ex) {
+            this.showAlert(
+                    Alert.AlertType.ERROR,
+                    ex.getMessage(),
+                    "Проверьте входные данные"
+            );
+        }
+    }
+
+    @FXML
+    protected void onSaveNetworkButtonClick() throws IOException {
+        FileChooser fileChooser = new FileChooser();
+
+        fileChooser.setTitle("Сохранение сети");
+        fileChooser.setInitialDirectory(new File(
+                Paths.get("trained-neural-network")
+                        .toAbsolutePath()
+                        .toUri()
+        ));
+        File savingFile = fileChooser.showSaveDialog(null);
+
+        if(savingFile != null) {
+            ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(savingFile.getPath()));
+            outputStream.writeObject(this.neuronetService.getMultiLayerPerceptron());
+            outputStream.close();
+        }
+    }
+
+    //TAB2
+    @FXML
     protected void onLearnButtonClick() {
         if(this.neuronetService.getMultiLayerPerceptron() != null) {
-            Thread learnNeuronetTread = new LearnNeuronetThread(neuronetService, this.storageService.getDatasetPath(), logsTextArea);
-            learnNeuronetTread.start();
-        } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Не найдена нейронная сеть!");
-            alert.setHeaderText("Необходимо создать или загрузить уже существующаю сеть.");
-            alert.showAndWait().ifPresent(rs -> {
-                if (rs == ButtonType.OK) {
-                    System.out.println("Pressed OK.");
+            try {
+                Thread learnNeuronetThread = null;
+                if(learnUntilToggle.isSelected()) {
+                    double errorPercent = Double.parseDouble(errorSumValueTextField.getText())/100;
+                    learnNeuronetThread = new LearnNeuronetThread(neuronetService, this.neuronetService.getDatasetPath(), logsTextArea, errorPercent);
+                } else {
+                    int epochsCount = Integer.parseInt(epochsCountTextField.getText());
+                    learnNeuronetThread = new LearnNeuronetThread(neuronetService, this.neuronetService.getDatasetPath(), logsTextArea, epochsCount);
                 }
-            });
+                learnNeuronetThread.start();
+            }
+            catch (Exception ex) {
+                this.showAlert(
+                        Alert.AlertType.ERROR,
+                        "Ошибка",
+                        ex.getMessage()
+                );
+            }
+        } else {
+            this.showAlert(
+                    Alert.AlertType.ERROR,
+                    "Не найдена нейронная сеть!",
+                    "Необходимо создать или загрузить уже существующаю сеть."
+            );
         }
     }
 
@@ -63,25 +123,26 @@ public class MainController {
         ));
         File loadingFile = fileChooser.showOpenDialog(null);
 
-        this.neuronetService.setAudioHelper(new AudioHelper());
         if(loadingFile != null) {
             try {
                 ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(loadingFile.getPath()));
-                this.neuronetService.setDataset((List<AudioData>) inputStream.readObject());
+                this.neuronetService.loadSavedDataset((List<AudioData>) inputStream.readObject());
                 inputStream.close();
-
-                System.out.println(this.neuronetService.getDataset().get(0).toString());
             }
             catch (Exception ex) {
-                System.err.println(ex);
+                this.showAlert(
+                        Alert.AlertType.ERROR,
+                        "Ошибка",
+                        ex.getMessage()
+                );
             }
         }
     }
     @FXML
-    protected void testClick() throws IOException, UnsupportedAudioFileException {
+    protected void onSaveDatasetClick() throws IOException, UnsupportedAudioFileException {
         FileChooser fileChooser = new FileChooser();
 
-        fileChooser.setTitle("Сохранение сети");
+        fileChooser.setTitle("Сохранение датасета");
         fileChooser.setInitialDirectory(new File(
                 Paths.get("calculated-dataset")
                         .toAbsolutePath()
@@ -91,7 +152,7 @@ public class MainController {
 
         if(savingFile != null) {
             ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(savingFile.getPath()));
-            this.neuronetService.loadDataset(StorageService.DEFAULT_DATASET_PATH);
+            this.neuronetService.loadDataset(NeuronetService.DEFAULT_DATASET_PATH);
             outputStream.writeObject(this.neuronetService.getDataset());
             outputStream.close();
         }
@@ -111,33 +172,8 @@ public class MainController {
 
         if(selectedDirectory != null) {
             selectedDirectory.getPath();
-            this.storageService.setDatasetPath(selectedDirectory.getPath());
+            this.neuronetService.setDatasetPath(selectedDirectory.getPath());
             checkPathSelection();
-        }
-    }
-
-    @FXML
-    protected void onCreateNeuronetButtonClick() {
-        this.neuronetService.createNeuronet(0.065);
-    }
-
-
-    @FXML
-    protected void onSaveNetworkButtonClick() throws IOException {
-        FileChooser fileChooser = new FileChooser();
-
-        fileChooser.setTitle("Сохранение сети");
-        fileChooser.setInitialDirectory(new File(
-                Paths.get("trained-neural-network")
-                    .toAbsolutePath()
-                    .toUri()
-        ));
-        File savingFile = fileChooser.showSaveDialog(null);
-
-        if(savingFile != null) {
-            ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(savingFile.getPath()));
-            outputStream.writeObject(this.neuronetService.getMultiLayerPerceptron());
-            outputStream.close();
         }
     }
 
@@ -163,11 +199,22 @@ public class MainController {
                 this.neuronetService.getMultiLayerPerceptron().setDerivative(this.neuronetService.getDsigmoid());
             }
             catch (Exception ex) {
-                System.err.println(ex);
+                this.showAlert(
+                        Alert.AlertType.ERROR,
+                        "Ошибка",
+                        ex.getMessage()
+                );
             }
         }
     }
 
+    @FXML
+    protected void onLearnUntilToggleClick() {
+        errorSumValueTextField.setDisable(!learnUntilToggle.isSelected());
+        epochsCountTextField.setDisable(learnUntilToggle.isSelected());
+    }
+
+    //TAB3
     @FXML
     protected void onRecognizeButtonClick() {
         FileChooser fileChooser = new FileChooser();
@@ -184,19 +231,24 @@ public class MainController {
             try {
                 AudioHelper audioHelper = new AudioHelper();
 
+                System.out.println(audioFile.getPath());
                 this.neuronetService.classifyAudioFile(
-                        audioHelper.calculateAudioData(audioFile.getPath())
+                        audioHelper.calculateUserAudio(audioFile.getPath())
                 );
             }
             catch (Exception ex) {
-                System.err.println(ex);
+                this.showAlert(
+                        Alert.AlertType.ERROR,
+                        "Ошибка",
+                        ex.getMessage()
+                );
             }
         }
     }
 
     private void checkPathSelection() {
         if(this.datasetChosenImage != null) {
-            this.datasetChosenImage.setVisible(this.storageService.isDatasetPathSpecified());
+            this.datasetChosenImage.setVisible(this.neuronetService.isDatasetPathSpecified());
         }
     }
 

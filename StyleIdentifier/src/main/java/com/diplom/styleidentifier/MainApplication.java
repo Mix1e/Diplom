@@ -14,6 +14,7 @@ public class MainApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load(), 591, 352);
         stage.setTitle("Style Identifier");
         stage.setScene(scene);
+        stage.setResizable(false);
         stage.show();
     }
 
