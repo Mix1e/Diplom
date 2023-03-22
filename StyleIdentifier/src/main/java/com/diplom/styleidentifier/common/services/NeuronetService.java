@@ -5,6 +5,9 @@ import com.diplom.styleidentifier.common.handler.audio.AudioData;
 import com.diplom.styleidentifier.common.handler.audio.AudioHelper;
 import com.diplom.styleidentifier.common.models.NeuronetLearnResult;
 import com.diplom.styleidentifier.common.neuronet.MultiLayerPerceptron;
+import javafx.scene.Scene;
+import javafx.scene.chart.*;
+import javafx.stage.Stage;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
@@ -79,6 +82,44 @@ public class NeuronetService {
         classify(audioData);
     }
 
+    public void testByRandomAudio(int count) throws IOException {
+        audioHelper = new AudioHelper();
+        audioHelper.getRandomAudioData(DEFAULT_DATASET_PATH, count).stream().forEach(
+                data -> classify(data)
+        );
+    }
+
+    public void classifyRandomAudioEveryStyle() throws IOException {
+        audioHelper = new AudioHelper();
+        audioHelper.getRandomAudioEveryStyle(DEFAULT_DATASET_PATH).stream().forEach(
+                data -> classify(data)
+        );
+    }
+
+    public void showClassifyResult(double[] outputs, EStyle right) {
+        Stage stage = new Stage();
+
+        stage.setTitle("Гистограмма распознанных жанров");
+        final CategoryAxis xAxis = new CategoryAxis();
+        final NumberAxis yAxis = new NumberAxis();
+        final BarChart<String,Number> bc =
+                new BarChart<>(xAxis,yAxis);
+
+        bc.setTitle(right == null ? "Исходный жанр не задан" : ("Исходный жанр: " + right));
+        xAxis.setLabel("Жанры");
+        yAxis.setLabel("Процент");
+
+        XYChart.Series series = new XYChart.Series();
+        series.setName("Процент распознавания");
+        for (int i = 0; i < AudioHelper.STYLES_COUNT; i++) {
+            series.getData().add(new XYChart.Data(EStyle.values()[i].toString(), outputs[i] * 100));
+        }
+
+        Scene scene  = new Scene(bc,800,600);
+        bc.getData().add(series);
+        stage.setScene(scene);
+        stage.show();
+    }
 
     public void classify(AudioData audio) {
         double[] inputs = MultiLayerPerceptron.inputsFromAudioData(audio);
@@ -91,6 +132,7 @@ public class NeuronetService {
             maxAt = outputs[i] > outputs[maxAt] ? i : maxAt;
         }
 
+        showClassifyResult(outputs, audio.getStyle());
         System.out.println("Guess it: " + EStyle.values()[maxAt]);
     }
 
@@ -123,5 +165,4 @@ public class NeuronetService {
     private void visualizeLearningResults(int number, NeuronetLearnResult learnResult) {
         System.out.println("epoch: " + (number + 1) + ". correct: " + learnResult.getRight() + ". error: " + learnResult.getErrorSum());
     }
-
 }

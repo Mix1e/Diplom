@@ -17,6 +17,7 @@ import java.io.*;
 import java.nio.file.Paths;
 import java.util.List;
 
+
 public class MainController {
     private NeuronetService neuronetService = new NeuronetService();
 
@@ -97,16 +98,16 @@ public class MainController {
             }
             catch (Exception ex) {
                 this.showAlert(
-                        Alert.AlertType.ERROR,
-                        "Ошибка",
-                        ex.getMessage()
+                    Alert.AlertType.ERROR,
+                    "Ошибка",
+                    ex.getMessage()
                 );
             }
         } else {
             this.showAlert(
-                    Alert.AlertType.ERROR,
-                    "Не найдена нейронная сеть!",
-                    "Необходимо создать или загрузить уже существующаю сеть."
+                Alert.AlertType.ERROR,
+                "Не найдена нейронная сеть!",
+                "Необходимо создать или загрузить уже существующаю сеть."
             );
         }
     }
@@ -164,9 +165,9 @@ public class MainController {
 
         directoryChooser.setTitle("Выберите путь к датасету");
         directoryChooser.setInitialDirectory(new File(
-                Paths.get("dataset")
-                        .toAbsolutePath()
-                        .toUri()
+            Paths.get("dataset")
+                    .toAbsolutePath()
+                    .toUri()
         ));
         File selectedDirectory = directoryChooser.showDialog(null);
 
@@ -233,7 +234,10 @@ public class MainController {
 
                 System.out.println(audioFile.getPath());
                 this.neuronetService.classifyAudioFile(
-                        audioHelper.calculateUserAudio(audioFile.getPath())
+                        audioFile.getPath().contains("genres_original") ?
+                                audioHelper.calculateAudioData(audioFile.getPath())
+                                :
+                                audioHelper.calculateUserAudio(audioFile.getPath())
                 );
             }
             catch (Exception ex) {
@@ -245,6 +249,27 @@ public class MainController {
             }
         }
     }
+
+    @FXML
+    protected void onRandomAudioToEveryStyleButtonClick() {
+        try {
+            neuronetService.classifyRandomAudioEveryStyle();
+        }
+        catch (Exception ex) {
+            this.showAlert(
+                    Alert.AlertType.ERROR,
+                    "Ошибка",
+                    ex.getMessage()
+            );
+        }
+    }
+
+    @FXML
+    protected void onButtonClick() throws IOException {
+        //Process p = Runtime.getRuntime().exec("C:\\diplom\\AudioTransformator\\venv\\Scripts\\python.exe C:\\diplom\\visualize\\main.py ");
+
+    }
+
 
     private void checkPathSelection() {
         if(this.datasetChosenImage != null) {

@@ -12,6 +12,7 @@ module com.diplom.styleidentifier {
     requires com.almasb.fxgl.all;
     requires quifft;
     requires com.google.gson;
+    requires opencsv;
 
     opens com.diplom.styleidentifier to javafx.fxml;
     exports com.diplom.styleidentifier;

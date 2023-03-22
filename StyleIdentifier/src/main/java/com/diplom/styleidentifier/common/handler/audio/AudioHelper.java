@@ -10,6 +10,8 @@ import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class AudioHelper {
     public static final int STYLES_COUNT = EStyle.values().length;
@@ -47,6 +49,52 @@ public class AudioHelper {
             }
         }
     }
+
+    public List<AudioData> getRandomAudioData(String path, int count) throws IOException {
+        List<AudioData> data = new LinkedList<AudioData>();
+
+        for (int i = 0; i < count; i++) {
+            File[] folderEntries = new File(path).listFiles();
+            if (folderEntries!=null) {
+                File randomFolder = folderEntries[
+                        ThreadLocalRandom.current().nextInt(0, folderEntries.length)
+                        ];
+                File[] audioFiles = randomFolder.listFiles();
+                if(audioFiles != null) {
+                    File randomFile = audioFiles[
+                            ThreadLocalRandom.current().nextInt(0, audioFiles.length)
+                            ];
+                    data.add(calculateAudioData(randomFile.getPath()));
+                }
+            }
+        }
+
+        return data;
+    }
+
+    public List<AudioData> getRandomAudioEveryStyle(String path) throws IOException {
+        List<AudioData> data = new LinkedList<AudioData>();
+
+        File[] folderEntries = new File(path).listFiles();
+        if (folderEntries==null) {
+            return new LinkedList<>();
+        }
+
+        for(File styleFolder : folderEntries) {
+            File[] audioFiles = styleFolder.listFiles();
+            if(audioFiles != null) {
+                File randomFile = audioFiles[
+                        ThreadLocalRandom.current().nextInt(0, audioFiles.length)
+                        ];
+                data.add(calculateAudioData(randomFile.getPath()));
+            }
+        }
+
+        return data;
+    }
+
+
+
 
     private String getJsonFromScript(String path) throws IOException {
         Process p = Runtime.getRuntime().exec(SCRIPT_START + path);

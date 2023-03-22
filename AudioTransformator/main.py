@@ -6,10 +6,6 @@ import librosa
 import librosa.feature
 from sklearn import preprocessing
 
-blues_file = "../StyleIdentifier/dataset/genres_original/blues/blues.00000.wav"
-metal_file = "../StyleIdentifier/dataset/genres_original/metal/metal.00000.wav"
-classical_file = "../StyleIdentifier/dataset/genres_original/classical/classical.00000.wav"
-
 FRAME_SIZE = 1024
 HOP_LENGTH = 512
 MAX_BPM = 300
