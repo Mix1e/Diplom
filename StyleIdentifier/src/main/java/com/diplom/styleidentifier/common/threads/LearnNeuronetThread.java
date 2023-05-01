@@ -4,6 +4,9 @@ import com.diplom.styleidentifier.common.services.NeuronetService;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class LearnNeuronetThread extends Thread {
     private NeuronetService neuronetService;
     private String datasetPath;
@@ -37,6 +40,8 @@ public class LearnNeuronetThread extends Thread {
             } else {
                 this.neuronetService.learnNeuronet(errorPercent);
             }
+            String newNote = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " " + "Сеть успешно обучена" + "\n";
+            this.logsTextArea.setText(this.logsTextArea.getText() + newNote);
         } catch (Exception ex) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Ошибка!");

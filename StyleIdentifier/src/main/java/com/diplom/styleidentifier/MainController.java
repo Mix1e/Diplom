@@ -7,22 +7,27 @@ import com.diplom.styleidentifier.common.services.NeuronetService;
 import com.diplom.styleidentifier.common.threads.LearnNeuronetThread;
 
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
+import java.awt.*;
 import java.io.*;
+import java.net.URL;
 import java.nio.file.Paths;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.ResourceBundle;
 
 
-public class MainController {
-    private NeuronetService neuronetService = new NeuronetService();
-
-    @FXML
-    private ImageView datasetChosenImage;
+public class MainController implements Initializable {
     @FXML
     private TextArea logsTextArea;
     @FXML
@@ -35,7 +40,18 @@ public class MainController {
     private Toggle learnUntilToggle;
     @FXML
     private TextField errorSumValueTextField;
+    @FXML
+    private ImageView brainImage;
+    private NeuronetService neuronetService;
 
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        neuronetService = new NeuronetService();
+        File file = new File("src/main/java/com/diplom/styleidentifier/common/icons/mega-brain.jpg");
+        Image image = new Image(file.toURI().toString());
+        brainImage.setImage(image);
+    }
 
     private void showAlert(Alert.AlertType type, String title, String header) {
         Alert alert = new Alert(type);
@@ -45,6 +61,12 @@ public class MainController {
         });
     }
 
+    private void log(String content) {
+        String newNote = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " " + content + "\n";
+        this.logsTextArea.setText(this.logsTextArea.getText() + newNote);
+        this.logsTextArea.end();
+    }
+
     //Tab1
     @FXML
     protected void onCreateNeuronetButtonClick() {
@@ -52,6 +74,7 @@ public class MainController {
             double learnRate = Double.parseDouble(learnRateTextField.getText());
             int hiddenLayerNeurons = Integer.parseInt(hiddenLayerNeuronsTestField.getText());
             this.neuronetService.createNeuronet(learnRate, hiddenLayerNeurons);
+            this.log("Сеть успешно создана");
         }
         catch (Exception ex) {
             this.showAlert(
@@ -78,6 +101,7 @@ public class MainController {
             ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(savingFile.getPath()));
             outputStream.writeObject(this.neuronetService.getMultiLayerPerceptron());
             outputStream.close();
+            this.log("Сеть успешно сохранена");
         }
     }
 
@@ -95,6 +119,7 @@ public class MainController {
                     learnNeuronetThread = new LearnNeuronetThread(neuronetService, this.neuronetService.getDatasetPath(), logsTextArea, epochsCount);
                 }
                 learnNeuronetThread.start();
+                this.log("Начало обучения сети");
             }
             catch (Exception ex) {
                 this.showAlert(
@@ -129,6 +154,7 @@ public class MainController {
                 ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(loadingFile.getPath()));
                 this.neuronetService.loadSavedDataset((List<AudioData>) inputStream.readObject());
                 inputStream.close();
+                this.log("Датасет успешно загружен");
             }
             catch (Exception ex) {
                 this.showAlert(
@@ -156,6 +182,7 @@ public class MainController {
             this.neuronetService.loadDataset(NeuronetService.DEFAULT_DATASET_PATH);
             outputStream.writeObject(this.neuronetService.getDataset());
             outputStream.close();
+            this.log("Датасет успешно сохранён");
         }
     }
 
@@ -174,7 +201,7 @@ public class MainController {
         if(selectedDirectory != null) {
             selectedDirectory.getPath();
             this.neuronetService.setDatasetPath(selectedDirectory.getPath());
-            checkPathSelection();
+            this.log("Датасет успешно выбран");
         }
     }
 
@@ -198,6 +225,8 @@ public class MainController {
 
                 this.neuronetService.getMultiLayerPerceptron().setActivation(this.neuronetService.getSigmoid());
                 this.neuronetService.getMultiLayerPerceptron().setDerivative(this.neuronetService.getDsigmoid());
+
+                this.log("Сеть успешно загружена");
             }
             catch (Exception ex) {
                 this.showAlert(
@@ -264,26 +293,4 @@ public class MainController {
         }
     }
 
-    @FXML
-    protected void onButtonClick() throws IOException {
-        //Process p = Runtime.getRuntime().exec("C:\\diplom\\AudioTransformator\\venv\\Scripts\\python.exe C:\\diplom\\visualize\\main.py ");
-
-    }
-
-
-    private void checkPathSelection() {
-        if(this.datasetChosenImage != null) {
-            this.datasetChosenImage.setVisible(this.neuronetService.isDatasetPathSpecified());
-        }
-    }
-
-    public void onNetworkTabChanged() {
-        checkPathSelection();
-    }
-    public void onLearnNetworkTabChanged() {
-        checkPathSelection();
-    }
-    public void onUseNetworkTabChanged() {
-        checkPathSelection();
-    }
 }

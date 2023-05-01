@@ -7,6 +7,7 @@ import com.diplom.styleidentifier.common.models.NeuronetLearnResult;
 import com.diplom.styleidentifier.common.neuronet.MultiLayerPerceptron;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
+import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -23,8 +24,10 @@ public class NeuronetService {
     private UnaryOperator<Double> sigmoid = x -> 1/ (1+Math.exp(-x));
     private UnaryOperator<Double> dsigmoid = y -> y * (1-y);
 
+
     public NeuronetService() {
     }
+
 
     public UnaryOperator<Double> getSigmoid() {
         return sigmoid;
